@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="it_admin_dashboard.css">
+    <title>IT Admin Dashboard</title>
+</head>
+<body>
+    <div class="dashboard-container">
+        <h1>IT Admin Dashboard</h1>
+
+        <h2>Manage Blacklist</h2>
+        <ul id="blacklist"></ul>
+        <input type="text" id="new-url" placeholder="Add new URL to blacklist">
+        <button id="add-url-btn">Add to Blacklist</button>
+        <button id="fetch-blacklist-btn">Refresh Blacklist</button>
+
+        <h2>Viewing Browsing Records</h2>
+        <button id="fetch-records-btn">Fetch Browsing Records</button>
+        <ul id="browsing-records"></ul>
+    </div>
+
+    <script>
+        // Utility function to make API calls
+        function apiCall(endpoint, method, body = {}) {
+            return fetch(`http://localhost:3000/${endpoint}`, {
+                method: method,
+                headers: { 'Content-Type': 'application/json' },
+                body: method === 'GET' ? null : JSON.stringify(body)
+            }).then(response => {
+                if (!response.ok) throw new Error('Network response was not ok');
+                return response.json();
+            });
+        }
+
+        // Fetch blacklist and display it
+        document.getElementById('fetch-blacklist-btn').onclick = function() {
+            apiCall('get-blacklist', 'GET')
+                .then(data => {
+                    const blacklistElement = document.getElementById('blacklist');
+                    blacklistElement.innerHTML = "";
+                    data.blacklist.forEach(url => {
+                        const li = document.createElement('li');
+                        li.textContent = url;
+                        blacklistElement.appendChild(li);
+                    });
+                })
+                .catch(error => console.error('Error fetching blacklist:', error));
+        };
+
+        // Add new URL to blacklist
+        document.getElementById('add-url-btn').onclick = function() {
+            const newUrl = document.getElementById('new-url').value;
+            if (newUrl) {
+                apiCall('update-blacklist', 'POST', { blacklist: [newUrl] })
+                    .then(() => {
+                        document.getElementById('new-url').value = "";
+                        document.getElementById('fetch-blacklist-btn').click();
+                    })
+                    .catch(error => console.error('Error updating blacklist:', error));
+            }
+        };
+
+        // Fetch browsing records and display them
+        document.getElementById('fetch-records-btn').onclick = function() {
+            apiCall('get-browsing-records', 'GET')
+                .then(data => {
+                    const recordsElement = document.getElementById('browsing-records');
+                    recordsElement.innerHTML = "";
+                    data.records.forEach(record => {
+                        const li = document.createElement('li');
+                        li.textContent = `${record.url} - ${record.timestamp}`;
+                        recordsElement.appendChild(li);
+                    });
+                })
+                .catch(error => console.error('Error fetching browsing records:', error));
+        };
+    </script>
+</body>
+</html>

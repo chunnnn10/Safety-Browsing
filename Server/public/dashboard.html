@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" href="dashboard.css" />
+        <title>Admin Dashboard</title>
+    </head>
+    <body>
+        <div class="dashboard-container">
+            <h1>Welcome to the Dashboard</h1>
+        </div>
+
+        <script>
+            // Utility function to make API calls
+            function apiCall(endpoint, method, body = {}) {
+                return fetch(`http://localhost:3000/${endpoint}`, {
+                    method: method,
+                    headers: { "Content-Type": "application/json" },
+                    body: method === "GET" ? null : JSON.stringify(body),
+                }).then((response) => {
+                    if (!response.ok)
+                        throw new Error("Network response was not ok");
+                    return response.json();
+                });
+            }
+
+            // Redirect based on user type after login
+            function redirectToDashboard(userType) {
+                switch (userType) {
+                    case "developer":
+                        window.location.href = "developer_dashboard.html";
+                        break;
+                    case "companyAdmin":
+                        window.location.href = "it_admin_dashboard.html";
+                        break;
+                    case "user":
+                        window.location.href = "user_dashboard.html";
+                        break;
+                    default:
+                        console.error("Unknown user type");
+                }
+            }
+
+            // Fetch user type and redirect accordingly
+            function loginUser() {
+                const username = document.getElementById("username").value;
+                const password = document.getElementById("password").value;
+
+                apiCall("login", "POST", { username, password })
+                    .then((data) => {
+                        if (data.userType) {
+                            redirectToDashboard(data.userType);
+                        } else {
+                            alert("Invalid credentials");
+                        }
+                    })
+                    .catch((error) => console.error("Login failed:", error));
+            }
+        </script>
+    </body>
+</html>

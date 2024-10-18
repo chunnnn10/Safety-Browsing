@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" href="developer_dashboard.css" />
+        <title>Developer Dashboard</title>
+    </head>
+    <body>
+        <div class="dashboard-container">
+            <h1>Developer Dashboard</h1>
+
+            <h2>Company Management</h2>
+            <button id="fetch-companies-btn">Fetch Companies</button>
+            <ul id="companies-list"></ul>
+
+            <h2>Database Management</h2>
+            <button id="connect-db-btn">Connect to SQL Database</button>
+            <div id="db-status">Database not connected</div>
+        </div>
+
+        <script>
+            // Utility function to make API calls
+            function apiCall(endpoint, method, body = {}) {
+                return fetch(`http://localhost:3000/${endpoint}`, {
+                    method: method,
+                    headers: { "Content-Type": "application/json" },
+                    body: method === "GET" ? null : JSON.stringify(body),
+                }).then((response) => {
+                    if (!response.ok)
+                        throw new Error("Network response was not ok");
+                    return response.json();
+                });
+            }
+
+            // Fetch the list of companies using the system
+            document.getElementById("fetch-companies-btn").onclick =
+                function () {
+                    apiCall("get-companies", "GET")
+                        .then((data) => {
+                            const companiesListElement =
+                                document.getElementById("companies-list");
+                            companiesListElement.innerHTML = "";
+                            data.companies.forEach((company) => {
+                                const li = document.createElement("li");
+                                li.textContent = company.name;
+                                companiesListElement.appendChild(li);
+                            });
+                        })
+                        .catch((error) =>
+                            console.error("Error fetching companies:", error),
+                        );
+                };
+
+            // Connect to SQL Database
+            document.getElementById("connect-db-btn").onclick = function () {
+                apiCall("connect-database", "POST")
+                    .then((data) => {
+                        document.getElementById("db-status").textContent =
+                            data.message;
+                    })
+                    .catch((error) =>
+                        console.error("Error connecting to database:", error),
+                    );
+            };
+        </script>
+    </body>
+</html>
