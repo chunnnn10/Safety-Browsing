@@ -1,6 +1,6 @@
 # Employee Browsing Record Chrome Extension
 
-[中文版本](README_CN.md)
+[中文版本](README.md)
 
 This project is a Chrome browser extension designed for managing employee browsing records. It aims to log and manage employees' web browsing activities, providing an admin backend system for managers to view and analyze these records. The project includes the following key features: login page, user management, browsing record management, and blacklist management.
 
