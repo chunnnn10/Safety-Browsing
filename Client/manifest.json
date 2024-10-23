@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Employee Web Tracking",
   "version": "2.5",
-  "description": "記錄並管理員工上網行為",
+  "description": "Record and manage employees’ online behavior",
   "permissions": [
     "declarativeNetRequest",
     "declarativeNetRequestWithHostAccess",
